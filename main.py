@@ -1,14 +1,25 @@
 import requests
 from bs4 import BeautifulSoup
 
-response = requests.get("https://www.google.com")
-# on peut faire des post aussi put ..
-# print(response)
-# retourne 200 donc c'est bon !
-# print(response.raise_for_status()) quand il ya des erreures
+url = "https://www.docstring.fr/api/books_to_scrape/index.html"
+response = requests.get(url)
 
-# recuperer un fichier de google et le mettre dans index.html qui est créer automatiquement
-with open("index.html", "w") as f:
-    f.write(response.text)
-    # .json si on tape sur une api
+# analyser ou parser le fichier à taper
+# beautifulSoup dispose de 4 parsers dont lxml lxml-xml html.parser(pas tolerent si balises son formaté) et html5lib plus lent mais
+# tolérents s' il y a des balises mal faites
 
+soup = BeautifulSoup(response.text, "html.parser")
+# prettiffy une methode de beautifulsoup qui permet de mettre en forme l'affichage le doc html
+print(soup.prettify())
+
+## Fonction de parcourir récursivement l'arbre DOM / afficher les noeuds du dom
+def traverse_dom(element, level = 0):
+    # Afficher l'element actuel
+    if element.name:
+        print(f"{'' * level }<{element.name}>")
+        # Si l'element a des enfants, les parcourir egalement
+        if hasattr(element, 'children'):
+            for child in element.children:
+                traverse_dom(child, level+1)
+#commencer le parcours depuis la racine de l'arbre DOM
+traverse_dom(soup)
