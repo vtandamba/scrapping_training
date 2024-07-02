@@ -1,25 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
+from pprint import pprint
 
 url = "https://www.docstring.fr/api/books_to_scrape/index.html"
 response = requests.get(url)
 
-# analyser ou parser le fichier à taper
-# beautifulSoup dispose de 4 parsers dont lxml lxml-xml html.parser(pas tolerent si balises son formaté) et html5lib plus lent mais
-# tolérents s' il y a des balises mal faites
-
+# recuperer des informations avec beautifulsoup
 soup = BeautifulSoup(response.text, "html.parser")
-# prettiffy une methode de beautifulsoup qui permet de mettre en forme l'affichage le doc html
-print(soup.prettify())
+# images = soup.find_all('img')
+images = soup.find_all('article', class_="product_prod")
+aside = soup.find('aside')
+for child in aside.children:
+    if child.name:
+        print(child.name)
+pprint(images)
+pprint(aside)
+side_categories = aside.find('div', class_ ='side_categories')
+links = side_categories.find_all('a')
+# Compter le nombre de liens avec un attribut href
+if side_categories:  # Vérifiez que l'élément a été trouvé
+    links = side_categories.find_all('a')
+    pprint(links)
 
-## Fonction de parcourir récursivement l'arbre DOM / afficher les noeuds du dom
-def traverse_dom(element, level = 0):
-    # Afficher l'element actuel
-    if element.name:
-        print(f"{'' * level }<{element.name}>")
-        # Si l'element a des enfants, les parcourir egalement
-        if hasattr(element, 'children'):
-            for child in element.children:
-                traverse_dom(child, level+1)
-#commencer le parcours depuis la racine de l'arbre DOM
-traverse_dom(soup)
+    # Compter le nombre de liens avec un attribut href
+    href_count = len([link for link in links if link.get('href')])
+    print(f"Nombre de liens avec un attribut href : {href_count}")
+else:
+    print("Div with class 'side_categories' not found")
+    
+print(aside.parent.parent)
