@@ -5,27 +5,29 @@ from pprint import pprint
 url = "https://www.docstring.fr/api/books_to_scrape/index.html"
 response = requests.get(url)
 
-# recuperer des informations avec beautifulsoup
-soup = BeautifulSoup(response.text, "html.parser")
-# images = soup.find_all('img')
-images = soup.find_all('article', class_="product_prod")
-aside = soup.find('aside')
-for child in aside.children:
-    if child.name:
-        print(child.name)
-pprint(images)
-pprint(aside)
-side_categories = aside.find('div', class_ ='side_categories')
-links = side_categories.find_all('a')
-# Compter le nombre de liens avec un attribut href
-if side_categories:  # Vérifiez que l'élément a été trouvé
-    links = side_categories.find_all('a')
-    pprint(links)
-
-    # Compter le nombre de liens avec un attribut href
-    href_count = len([link for link in links if link.get('href')])
-    print(f"Nombre de liens avec un attribut href : {href_count}")
-else:
-    print("Div with class 'side_categories' not found")
+with open("index.html", "w") as f:
+    f.write(response.text)
+with open("index.html", 'r') as f:
+    html = f.read()
     
-print(aside.parent.parent)
+# analyser la page d'accueil des livres du site books_to_scrape
+soup = BeautifulSoup(html, "html.parser")
+aside = soup.find('div', class_='side_categories')
+# categories_div = aside.find('ul').find('li').find('ul')
+# for category in categories.children:
+#     if(category.name):
+#         print(category.text.strip())
+#     
+
+categories_div = aside.find('ul').find('li').find('ul')
+categories = [child.text.strip() for child in categories_div.children if child.name]
+pprint (categories)
+
+
+images = soup.find('section').find_all('img')
+for img in images:
+    print(img['src'])
+    # ou
+    print(img.get('src'))
+    
+# pprint('images')
